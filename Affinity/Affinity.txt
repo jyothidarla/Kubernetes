@@ -1,0 +1,65 @@
+Node affinity:
+This is a feature of Kubernetes whcih attracts pods to a
+specific slave
+=================================
+To see the list of a labels
+kubectl get nodes --show-labels
+
+To label a slave
+kubectl label nodes <your-node-name> key=value
+
+kubectl label nodes gke-cluster-1-default-pool-3cde7c4a-hl74 slave1=ajay
+=====================================================================
+Pod Defintion file to implement node affinity
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: slave1
+            operator: In
+            values:
+            - ajay            
+  containers:
+  - name: nginx
+    image: nginx
+
+=================================================================
+Deployment file to implement node affintiy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    type: proxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: proxy
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        type: proxy
+    spec:
+      containers:
+        - name: mynginx
+          image: nginx
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: slave1
+                    operator: In
+                    values:
+                      - ajay
+    

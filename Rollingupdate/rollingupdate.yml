@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deploy
+  labels:
+    app: myapp
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      name: tomcat-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: mytomcat
+          image: tomcat:jre17
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-deploy
+  labels:
+    app: app
+spec:
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      name: httpd-pod
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: httpd
+          image: httpd:alpine3.18
+---
+

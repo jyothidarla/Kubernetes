@@ -1,0 +1,17 @@
+NAMESPACE:
+---------------------------------------
+Namespace is a way to virtually divide a Kubernetes cluster into multiple distinct parts. It's used to create separate environments within the same cluster, allowing different teams, users, or applications to coexist while providing a level of isolation and resource segregation.
+
+command
+1: create a new namespace: 
+kubectl create namespace <namespace-name>
+
+2: to see namespace 
+kubectl get namespaces
+
+3: delete namespace
+kubectl delete namespace <namespace-name>
+
+4: to see all type of namespace
+kubectl get pods --all-namespaces
+

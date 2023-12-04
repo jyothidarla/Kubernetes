@@ -1,0 +1,127 @@
+POD:
+==============================================================
+pod is the smallest deployable unit that can be managed. It represents one or more containers that are scheduled to run on a shared context, such as a node within a Kubernetes cluster.
+
+UseCase-1
+Create a pod definition file to start an nginx in a pod 
+name the pod as nginx-pod,name the container as webserver
+
+vim pod-defintion1.yml
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+ name: nginx-pod
+ labels:
+  author: ajay
+  type: reverse-proxy
+spec:
+ containers:
+  - name: appserver
+    image: nginx
+...
+
+To create a pod from the above file
+kubectl create -f pod-defintion1.yml
+
+To see the list of pods
+kubectl get pods
+
+To see the pods along with the ipaddress and name of the slave where it is running
+kubectl get pods -o wide
+
+To delete the pods created from the above file
+kubectl delete -f pod-definition1.yml
+
+
+=========================================================================
+Create a pod defintion file to start a postgres container
+Name of the container should be mydb,pass the necssary environment
+variables,this container should run in a pod called postgres-pod
+and give the labels as author=intelliqit and type=database
+
+
+vim pod-definition2.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+ name: postgres-pod
+ labels:
+  author: ajay
+  type: database
+spec:
+ containers:
+  - name: mydb
+    image: postgres
+    env:
+     - name: POSTGRES_PASSWORD
+       value: mypassword
+     - name: POSTGRES_USER
+       value: myuser
+     - name: POSTGRES_DB
+       value: mydb
+
+To create pods from the above defintion file
+kubectl create -f pod-defintion2.yml
+
+To delete the pods
+kubectl delete -f pod-definition2.yml
+
+
+
+========================================================================
+UseCase 3
+Create a pod defintion file to start a jenkins container in a pod
+called jenkins-pod,also perform port mapping to access the jenkins
+from a browser
+
+vim pod-definition3.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+ name: jenkins-pod
+ labels:
+  author: ajay
+  type: ci-cd
+spec:
+ containers:
+  - name: myjenkins
+    image: jenkins
+    ports:
+     - containerPort: 8080
+       hostPort: 8080
+...
+
+To create pods from the above file
+kubectl create -f pod-defintion3.yml
+
+To see the list of pods along with nodes where they are running
+kubectl get nodes -o wide
+
+To get the external ip of the node
+kubectl get node -o wide
+
+To access then jenkins from browser
+external_ip_of_slavenode:8080
+
+=======================================================================
+Create a pod definition file to setup tomcat
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tomcat-pod
+  labels:
+    author: ajay
+    type: appserver
+spec:
+  containers:
+    - name: mytomcat
+      image: tomee
+      ports:
+        - containerPort: 8080
+          hostPort: 9090

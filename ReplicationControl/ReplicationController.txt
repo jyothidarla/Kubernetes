@@ -1,0 +1,44 @@
+ReplicationController
+=======================
+This is a high level Kubernets object that can be used for handling 
+multiple replicas of a Pod.Here we can perfrom Load Balancing
+and Scalling
+
+ReplicationController uses keys like "replicas,template" etc in the "spec" section
+In the template section we can give metadata related to the pod and also use
+another spec section where we can give containers information
+
+Create a replication controller for creating 3 replicas of httpd
+vim repilication-controller.yml
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ name: httpd-rc
+ labels:
+  author: ajay
+spec:
+ replicas: 3
+ template:
+  metadata:
+   name: httpd-pod
+   labels:
+    author: ajay
+  spec:
+   containers:
+    - name: myhttpd
+      image: httpd
+      ports:
+       - containerPort: 80
+         hostPort: 8080
+...
+
+To create the httpd replicas from the above file
+kubectl create -f replication-controller.yml
+
+To check if 3 pods are running an on whcih slaves they are running
+kubectl get pods -o wide
+
+To delete the replicas
+kubectl delete -f replication-controller.yml
+=========================================================================

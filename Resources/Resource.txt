@@ -1,0 +1,21 @@
+Resource:
+==========================
+Resources refer to the computing components such as CPU, memory, storage, and network bandwidth that are allocated to containers within a cluster. Properly managing these resources is crucial for ensuring that applications run efficiently and reliably.
+
+Note:
+------------------------------
+Resource management in Kubernetes involves defining resource requests and limits in the pod specifications. Requests specify the minimum amount of resources a container needs to run, while limits define the maximum amount of resources a container can consume.
+
+syntax
+----------------
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
+
+
+This configuration specifies that the container requires at least 64MiB of memory and 250 milliCPU (or 0.25 CPU cores) but can consume up to 128MiB of memory and 500 milliCPU.
+

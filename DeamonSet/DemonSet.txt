@@ -1,0 +1,25 @@
+DaemonSets:
+These are used to run a single pod on each and every slave,The no salve count will
+become the desired count of the Daemonsets
+====================
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ghost-daemon
+  labels:
+    type: cms
+spec:
+  selector:
+    matchLabels:
+      type: cms
+  template:
+    metadata:
+      name: ghost-pod
+      labels:
+        type: cms
+    spec:
+      containers:
+        - name: ghost
+          image: ghost
+...

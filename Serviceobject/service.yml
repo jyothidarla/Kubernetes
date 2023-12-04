@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport
+  labels:
+    type: app
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 80
+      port: 8080
+      nodePort: 30014
+  selector:
+    name: ajay
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport
+  labels:
+    type: app1
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 80
+      port: 8080
+      nodePort: 30011
+  selector:
+    app: nginx-new
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd-pod
+  labels:
+    name: ajay
+spec:
+  containers:
+    - name: myhttpd
+      image: httpd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy-v2  # New deployment name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-new  # Change the selector label
+  template:
+    metadata:
+      labels:
+        app: nginx-new  # Change the label in the pod template
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+...

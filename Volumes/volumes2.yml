@@ -1,0 +1,52 @@
+#persistentVolume concept and persistenvolumeClaim concept
+#this pv and pvc is gud for pod only ...
+#wecan't use in deployment because its comes from an id it should be change any #time 
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: mnt/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+  labels:
+    name: volume
+spec:
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd-pod
+  labels:
+    name: myapp
+spec:
+  containers:
+  - name: myhttpd
+    image: httpd
+    volumeMounts:
+      - name: tsk-pv-storge
+        mountPath: /usr/local/apache2/htdocs
+  volumes: 
+    - name: tsk-pv-storge
+      persistentVolumeClaim:
+        claimName: task-pv-claim
+...
+

@@ -1,0 +1,60 @@
+Statefulsets
+===================
+A StatefulSet in Kubernetes is a controller object used to manage stateful applications. It's designed for applications that require stable, unique network identifiers, persistent storage, and ordered, graceful deployment and scaling.
+
+Stateful Application Management:
+-----------------------------------------------
+StatefulSets are suitable for stateful applications like databases (e.g., MySQL, PostgreSQL), key-value stores (e.g., Redis, Cassandra), and other applications requiring persistent storage and unique identities.
+
+Stateless Application
+-----------------------------------
+A stateless application is an application design where the application's functionality and behavior do not rely on or store any state or session data between individual user requests. In other words, each request from a user is handled independently without relying on the memory of previous interactions.
+======================
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  clusterIP: None
+  selector:
+    app: mysql
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: 3306
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  serviceName: mysql
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      volumes:
+        - name: task-pv-storage
+          persistentVolumeClaim:
+            claimName: task-pv-claim
+      containers:
+        - name: mysql
+          image: mysql:5.6
+          ports:
+            - name: tpc
+              protocol: TCP
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: ajay
+
+          volumeMounts:
+            - name: task-pv-storage
+              mountPath: /var/lib/mysql

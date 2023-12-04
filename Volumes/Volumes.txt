@@ -1,0 +1,133 @@
+Volumes
+------------
+volumes are a way to persist and store data that needs to be shared among containers within a pod. They provide a mechanism for containers to access and share the same data or files.
+==================
+---
+apiVersion: v1
+kind: Pod
+metadata:
+ name: redis-pod
+ labels:
+  author: ajay
+spec:
+ containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+     - name: redis-volume
+       mountPath: /data/redis
+ volumes:
+  - name: redis-volume
+    emptyDir: {}
+
+Create a pod from the above file
+kubectl create -f volumes.yml
+
+To check if the volume is mounted
+kubectl exec -it redis-pod -- bash
+
+Go to the redis folder and create some files
+cd redis
+cat > file
+Store some data in this file
+
+To kill the redis pod install procps
+apt-get update
+apt-get install -y procps
+
+Identify the process id of redis
+ps aux
+kill 1
+
+Check if the redis-pod is recreated
+kubectl get pods
+We will see the restart count changes for this pod
+
+If we go into this pods interactive terminal
+kubectl exec -it redis-pod -- bash
+
+We will see the data but not the s/w's (procps) we installed
+cd redis
+ls
+
+ps  This will not work
+======================================================================
+
+Persistent volume is the storage that is used by Kubernetes for Volumes
+Persistent volume claim is the amount of storage from the persistent volume that
+will be allocatted to a Pod.It is alos a PVC that is attached to a Pod
+
+vim pv.yml
+--
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 4Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data
+...
+
+To create the persistant volume
+kubect apply -f pv.yml
+
+To see the list of pv
+kubectl get pv
+
+Create a persistantvolumeclaim definition file
+
+vim pvc.yml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+  labels:
+    author: ajay
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+To create the persistant volume claim
+kubectl apply -f pvc.yml
+
+To see the list of pvc
+kubectl get pvc
+
+Create a pod defintion file to use the above pvc
+vim pod-volumes.yml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    author: ajay
+    type: proxy
+spec:
+  containers:
+    - name: mynginx
+      image: nginx
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: my-volume
+  volumes:
+    - name: my-volume
+      persistentVolumeClaim:
+        claimName: my-pvc
+
+
+To create pods from the above file
+kubectl apply -f pod-volumes.yml
+s

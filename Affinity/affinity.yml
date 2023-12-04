@@ -1,0 +1,79 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd-pod
+  labels:
+    name: ajay
+spec:
+  containers:
+  - name: myhttpd
+    image: httpd
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: slave1
+              operator: In
+              values:
+                - slave2
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: app
+  template:
+    metadata:
+      name: tomcat-pod
+      labels:
+        type: app
+    spec:
+      containers:
+        - name: mytomcat
+          image: tomcat
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: slave3
+                  operator: In
+                  values:
+                    - slave4
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-new
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: nginx-new
+    spec:
+      containers:
+        - name: mynginx
+          image: nginx
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+             nodeSelectorTerms:
+              - matchExpressions:
+                - key: slave5
+                  operator: In
+                  values:
+                    - slave6
+...
+        
+

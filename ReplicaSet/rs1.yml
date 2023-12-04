@@ -1,0 +1,19 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: jenkins-replicaset
+spec:
+  replicas: 1  # Number of desired replicas for Jenkins
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts
+...

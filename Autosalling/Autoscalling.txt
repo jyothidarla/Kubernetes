@@ -1,0 +1,68 @@
+Autoscalling 
+===================
+Auto-scaling in Kubernetes refers to the capability of automatically adjusting the number of running instances (pods) within a cluster based on the observed metrics such as CPU utilization, memory usage, or custom metrics.
+
+There are two primary types of auto-scaling in Kubernetes:
+
+Horizontal Pod Autoscaler (HPA):
+--------------------------------------- 
+This type of auto-scaling scales the number of pods in a deployment or replica set. It monitors the CPU utilization or custom metrics and adjusts the number of replicas to maintain a specified target level of resource utilization.
+
+Vertical Pod Autoscaler (VPA):
+-----------------------------------------
+Unlike HPA, VPA scales the individual pods by adjusting their CPU and memory requests based on historical usage. It helps optimize the resource allocation for each pod by dynamically changing its resource requests.
+=================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  selector:
+    matchLabels:
+      run: php-apache
+  template:
+    metadata:
+      labels:
+        run: php-apache
+    spec:
+      containers:
+      - name: php-apache
+        image: registry.k8s.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  labels:
+    run: php-apache
+spec:
+  ports:
+  - port: 80
+  selector:
+    run: php-apache
+
+...
+
+
+To create a horrizontal pod autoscaller
+kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+
+To see the list of hpa
+kubectl get hpa
+
+To put load on the php application
+kubectl run -i \
+    --tty load-generator \
+    --rm --image=busybox \
+    --restart=Never \
+    -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+
+To see the pods autoscalling
+kubectl get hpa php-apache --watch
