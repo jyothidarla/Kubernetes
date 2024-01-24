@@ -1,3 +1,5 @@
+ kubectl apply --dry-run=client -f replicac.yml  //know the syntax validation
+
 ReplicaSet
 ===================
 This is also similar to ReplicationController but it is more
